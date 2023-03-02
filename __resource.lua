@@ -1,23 +1,12 @@
-client_script "@mapmanager/koobs.lua"
-server_script "@mapmanager/koobs_sv.lua"
--- client_script "main.lua"
--- client_script "config.lua"
-
 fx_version 'cerulean'
 game 'gta5'
 
 author 'Have Good Time..!'
-description 'Have Fub..!'
+description 'Have Fun..!'
 version '1.2.0'
 
-resource_type 'gametype' { name = 'My awesome game type!' }
+resource_type 'gametype' { name = 'Noel Awesome Sources!' }
 
-client_scripts {
-    "main.lua",
-
-}
+client_script "main.lua"
 
 
--- server_scripts {
--- "server.lua",
--- }
