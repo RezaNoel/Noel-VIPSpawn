@@ -49,18 +49,48 @@ function createveh(car)
     RequestModel(vehiclehash)
     lastveh=GetVehiclePedIsIn(ped, false)
     if lastveh then
-    DeleteVehicle(lastveh)
+    DeleteVehicele(lastveh)
     end
-    currentveh = CreateVehicle(vehiclehash, x, y, z, GetEntityHeading(PlayerPedId()), 1, 0)
+    currentveh = CreateVehicele(vehiclehash, x, y, z, GetEntityHeading(PlayerPedId()), 1, 0)
     SetPedIntoVehicle(PlayerPedId(),currentveh, -1)
     print(car..' successfully spawned')
-    TriggerEvent('chatMessage', source, "[VIP Car]", {255, 0, 0}, tostring(car)..' successfully spawned')
+    -- TriggerEvent('chat:addMessage', source, "[VIP Car]", {255, 0, 0}, tostring(car)..' successfully spawned')
+    TriggerEvent('chat:addMessage', {color = { 255, 0, 0},args = {"[VIP Car]",car.." successfully spawned..!"}})
 
 end
 
+  
+RegisterCommand('vc', function(source)
+    ESX.TriggerServerCallback('esx_aduty:getAdminPerm', function(aperm)
+        if aperm >= 2 then
+            ESX.TriggerServerCallback('esx_aduty:checkAduty', function(isAduty)
+                if isAduty then vipcarmenu() 
+                else
+                TriggerEvent('chat:addMessage', {color = { 255, 0, 0}, multiline = true ,args = {"[SYSTEM]", "^0Shoma nemitavanid dar halat ^1OffDuty ^0az command haye admini estefade konid!"}})
+                end
+            end)
+        else
+            TriggerEvent('chat:addMessage', {color = { 255, 0, 0}, multiline = true ,args = {"[SYSTEM]", "^0Shoma dastresi kafi baraye estefade az in dastor ra nadarid!"}})
+        end
+        end)
+end, false)
+RegisterCommand('vipcar', function(source)
+    ESX.TriggerServerCallback('esx_aduty:getAdminPerm', function(aperm)
+        if aperm >= 2 then
+            ESX.TriggerServerCallback('esx_aduty:checkAduty', function(isAduty)
+                if isAduty then vipcarmenu() 
+                else
+                TriggerEvent('chat:addMessage', {color = { 255, 0, 0}, multiline = true ,args = {"[SYSTEM]", "^0Shoma nemitavanid dar halat ^1OffDuty ^0az command haye admini estefade konid!"}})
+                end
+            end)
+        else
+            TriggerEvent('chat:addMessage', {color = { 255, 0, 0}, multiline = true ,args = {"[SYSTEM]", "^0Shoma dastresi kafi baraye estefade az in dastor ra nadarid!"}})
+        end
+        end)
+end, false)
 
     ------------------ /vipcar -------------------
-RegisterCommand('vipcar', function() vipcarmenu() end,false)
+-- RegisterCommand('vipcar', function() vipcarmenu() end,false)
 TriggerEvent('chat:addSuggestion', '/vipcar', 'VIP Car Menu.')
-RegisterCommand('vc', function() vipcarmenu() end, false)
+-- RegisterCommand('vc', function() vipcarmenu() end, true)
 TriggerEvent('chat:addSuggestion', '/vc', 'VIP Car Menu.')
