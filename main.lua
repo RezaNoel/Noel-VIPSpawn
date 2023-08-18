@@ -1,96 +1,115 @@
 -- Created by RezaNoel#0001
--- Version 1.2
+-- Version 1.3
 -- _  _  _____  ____  __   
 --( \( )(  _  )( ___)(  )  
 -- )  (  )(_)(  )__)  )(__ 
 --(_)\_)(_____)(____)(____)
-                                                      
-ESX =
- nil
+
+local AdminOnly = True
+
+ESX = nil
 TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
------------------- Change to your vip car name -------------------
-carlist={
-    'gtrs4',
-    'neon',
-    't20',
-    'bf400'
+    ------------------ VIP Cars -------------------
+VipCarsList={
+  
+    {Name = 'neon' ,Label = 'Neon' },
+    {Name = 't20' ,Label = 'T20' },
+    {Name = 'bf400' ,Label = 'BF400' }
 }
 
-
-elements={ }
-for i = 1, #carlist, 1 do
-    elements[i]={label,value}
-    elements[i].label=carlist[i]
-    elements[i].value=carlist[i]
+    ------------------ Cars Label -------------------
+local Cars={ }
+for i = 1, #VipCarslist, 1 do
+    Cars[i]={label,name}
+    Cars[i].label=VipCarlist[i].Label
+    Cars[i].name=VipCarlist[i].Name
 end
 
     ------------------ Open Menu -------------------
-function vipcarmenu()
+function SpawnCarMenu()
     ESX.UI.Menu.CloseAll()
     ESX.UI.Menu.Open('default', GetCurrentResourceName(), 'vipcarmenu', {
         title = 'VIP Cars',
         align = 'top-left',
-        elements = elements
-    }, function(data,menu)
+        elements = Cars
+    },
+    function(data,menu)
     
-        for i = 1, #elements, 1 do
-            if data.current.value == elements[i].value then createveh(data.current.value)end
-        end
-        menu.close() 
-    end,function(data, menu)menu.close()end)-----First Open Menu
-end----Function
+      for i = 1, #Cars, 1 do
+          if data.current.value == Cars[i].name then CreateNewCar(data.current.value)end
+      end
+      menu.close() 
+      
+    end,function(data, menu)menu.close()end)
+end
     ------------------ Spawn Car -------------------
-function createveh(car)
-    local x,y,z = table.unpack(GetEntityCoords(PlayerPedId()))
-    ped=GetPlayerPed(-1)
-    local veh = car
-    if veh == nil then veh = "adder" end
-    vehiclehash = GetHashKey(veh)
-    RequestModel(vehiclehash)
-    lastveh=GetVehiclePedIsIn(ped, false)
-    if lastveh then
-    DeleteVehicele(lastveh)
+
+function DeleteCurrentCar(Car)
+  --Variables
+    local Ped=GetPlayerPed(-1)
+  --Delete Current Car
+    if Car == nil then Car = "adder" end
+    local CarHash = GetHashKey(Car)
+    RequestModel(CarHash)
+    local LastCarPedIsIn=GetVehiclePedIsIn(Ped, false)
+    if LastCarPedIsIn then
+    DeleteVehicle(LastCarPedIsIn)
     end
-    currentveh = CreateVehicele(vehiclehash, x, y, z, GetEntityHeading(PlayerPedId()), 1, 0)
-    SetPedIntoVehicle(PlayerPedId(),currentveh, -1)
-    print(car..' successfully spawned')
-    -- TriggerEvent('chat:addMessage', source, "[VIP Car]", {255, 0, 0}, tostring(car)..' successfully spawned')
-    TriggerEvent('chat:addMessage', {color = { 255, 0, 0},args = {"[VIP Car]",car.." successfully spawned..!"}})
+  
+end
+
+function CreateNewCar(Car)
+  --Variables
+    local Ped=GetPlayerPed(-1)
+    local PedSeat = -1
+    local PlayerLocation ={}
+    PlayerLocation[X],PlayerLocation[Y],PlayerLocation[Z] = table.unpack(Ped)
+    PlayerLocation[H] = GetEntityHeading(Ped)
+
+  --Delete Current Car
+  DeleteCurrentCar(Car)
+  
+  --Create New Car
+    local NewCar = CreateVehicle(CarHash ,PlayerLocation[X] ,PlayerLocation[Y] ,PlayerLocation[Z] ,PlayerLocation[H] ,1 ,0)
+    
+    SetPedIntoVehicle(Ped,NewCar, PedSeat)
+    TriggerEvent('chat:addMessage', {color = { 255, 0, 0},args = {"[VIP Car]",Car.." successfully spawned..!"}})
 
 end
 
-  
-RegisterCommand('vc', function(source)
-    ESX.TriggerServerCallback('esx_aduty:getAdminPerm', function(aperm)
-        if aperm >= 2 then
-            ESX.TriggerServerCallback('esx_aduty:checkAduty', function(isAduty)
-                if isAduty then vipcarmenu() 
-                else
-                TriggerEvent('chat:addMessage', {color = { 255, 0, 0}, multiline = true ,args = {"[SYSTEM]", "^0Shoma nemitavanid dar halat ^1OffDuty ^0az command haye admini estefade konid!"}})
-                end
-            end)
-        else
-            TriggerEvent('chat:addMessage', {color = { 255, 0, 0}, multiline = true ,args = {"[SYSTEM]", "^0Shoma dastresi kafi baraye estefade az in dastor ra nadarid!"}})
+function GetPlayerAccess (source)
+    ESX.TriggerServerCallback('esx_aduty:getAdminPerm', function(AdminPermission)
+          if AdminPermission >= 2 then
+              ESX.TriggerServerCallback('esx_aduty:checkAduty', function(IsAduty)
+                  if IsAduty then 
+                    SpawnCarMenu() 
+                  else
+                    TriggerEvent('chat:addMessage', {color = { 255, 0, 0}, multiline = true ,args = {"[SYSTEM]", "^0You can't use this command on ^1OffDuty ^0 status!"}})
+                  end
+              end)
+          else
+              TriggerEvent('chat:addMessage', {color = { 255, 0, 0}, multiline = true ,args = {"[SYSTEM]", "^0You do not have enough permissions!"}})
         end
-        end)
-end, false)
-RegisterCommand('vipcar', function(source)
-    ESX.TriggerServerCallback('esx_aduty:getAdminPerm', function(aperm)
-        if aperm >= 2 then
-            ESX.TriggerServerCallback('esx_aduty:checkAduty', function(isAduty)
-                if isAduty then vipcarmenu() 
-                else
-                TriggerEvent('chat:addMessage', {color = { 255, 0, 0}, multiline = true ,args = {"[SYSTEM]", "^0Shoma nemitavanid dar halat ^1OffDuty ^0az command haye admini estefade konid!"}})
-                end
-            end)
-        else
-            TriggerEvent('chat:addMessage', {color = { 255, 0, 0}, multiline = true ,args = {"[SYSTEM]", "^0Shoma dastresi kafi baraye estefade az in dastor ra nadarid!"}})
-        end
-        end)
-end, false)
+          end)
+  end
+    ------------------ Check Is Admin -------------------
 
-    ------------------ /vipcar -------------------
--- RegisterCommand('vipcar', function() vipcarmenu() end,false)
-TriggerEvent('chat:addSuggestion', '/vipcar', 'VIP Car Menu.')
--- RegisterCommand('vc', function() vipcarmenu() end, true)
-TriggerEvent('chat:addSuggestion', '/vc', 'VIP Car Menu.')
+if AdminOnly == True then
+
+  RegisterCommand('vc', GetPlayerAccess(), false)
+  RegisterCommand('vipcar',GetPlayerAccess() , false)
+  
+elseif AdminOnly == False then
+
+  RegisterCommand('vc', function() SpawnCarMenu() end, true)
+  RegisterCommand('vipcar', function() SpawnCarMenu() end,false)
+  
+else
+  
+  TriggerEvent('chat:addMessage', {color = { 255, 0, 0}, multiline = true ,args = {"[SYSTEM]", "^0Please set AdminOnly Variable!"}})
+
+end
+
+  TriggerEvent('chat:addSuggestion', '/vipcar', 'VIP Car Menu.')
+  TriggerEvent('chat:addSuggestion', '/vc', 'VIP Car Menu.')
+
