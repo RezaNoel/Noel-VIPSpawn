@@ -3,10 +3,18 @@ game 'gta5'
 
 author 'Have Good Time..!'
 description 'Have Fun..!'
-version '1.2.0'
+version '1.3.0'
 
-resource_type 'gametype' { name = 'Noel Awesome Sources!' }
+server_scripts {
+    "config.lua",
+    "server.lua"
+    
+}
+client_scripts{
+    "config.lua",
+    "client.lua"
+    
+}
 
-client_script "main.lua"
 
 
